@@ -1,0 +1,39 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  moduleFormat  = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(CUSTOMER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  managedRestaurant Restaurant? @relation("RestaurantAdmin")
+}
+
+model Restaurant {
+  id          String   @id @default(uuid())
+  name        String
+  domain      String   @unique
+  isActive    Boolean  @default(true)
+  adminId     String   @unique
+  admin       User     @relation("RestaurantAdmin", fields: [adminId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Role {
+  SUPER_ADMIN
+  RESTAURANT_ADMIN
+  DRIVER
+  CUSTOMER
+  EMPLOYEE
+}
